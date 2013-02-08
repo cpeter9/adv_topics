@@ -166,5 +166,9 @@ for(i in 1:iter){
 1 - length(which(q.rt >= q.obs)) / iter
 
 
+# Nearest neighbor approach
+
+
+
 
 
