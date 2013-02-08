@@ -28,3 +28,11 @@ fit <- fitdistr(data$returns, "normal")
 mean <- fit$estimate[1]
 sd <- fit$estimate[2]
 
+# Find 0.01 quantile of distribution
+quantile_1_pct <- qnorm(0.01, mean, sd)
+
+# Simulate data from model and return mean and sd
+sim_output <- list(sim_mean = mean(rnorm(length(data$returns), mean, sd)), 
+                   sim_sd = sd(rnorm(length(data$returns), mean, sd)))
+
+
