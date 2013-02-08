@@ -84,34 +84,25 @@ ggplot(data, aes(x = returns)) +
 
 boostrap_q_0.01 <- function(B){
   q_est <- rep(0, B)
-  se_est <- rep(0, B)
-  
+
   for(i in 1:B){
     set.seed(i)
     input_sample <- sample(data$returns, 100, replace = TRUE)
     q_est[i] <- quantile(input_sample, 0.01)
-    
-    se_sub_est <- rep(0, 100)
-    for(j in 1:100){
-      set.seed(j)
-      se_sub_est[j] <- quantile(sample(input_sample, 30, replace = TRUE), 0.01)
-    }
-    
-    se_est[i] <- sd(se_sub_est)
   }
 
-  output <- as.data.frame(list(q_est = q_est, se_est = se_est))
+  output <- as.data.frame(list(q_est = q_est))
   return(output)
 }
 
 B <- 1000
 estimates <- boostrap_q_0.01(B)
 
-mean(estimates$q_est) - mean(lower) * mean(estimates$se_est)
-mean(estimates$q_est) - mean(upper) * mean(estimates$se_est)
-mean(estimates$q_est)
+boot.estimates <- list(lower = quantile(estimates$q_est, 0.025),
+                       point = mean(estimates$q_est),
+                       upper = quantile(estimates$q_est, 0.975)) # lower: -0.06, mean: -0.035, upper: -0.021
 
-
+conf_interval # Bootstrapped confidence interval is much much wider than that bootstrapped from the parametric distribution
 
 
 
