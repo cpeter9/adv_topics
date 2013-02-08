@@ -2,27 +2,31 @@
 # Email: cpeter9@gmail.com
 # Homework 2: More simulation
 
+
 # install.packages("MASS")
-library(MASS)
-
+# library(MASS)
+# 
 # install.packages("munsell")
-library(munsell)
-
+# library(munsell)
+# 
 # install.packages("dichromat")
-library(dichromat)
-
+# library(dichromat)
+# 
 # install.packages("labeling")
-library(labeling)
-
+# library(labeling)
+# 
 # install.packages("ggplot2")
-library(ggplot2)
-
+# library(ggplot2)
+# 
 # install.packages("plyr")
-library(plyr)
+# library(plyr)
+# 
 
+## @knitr Q1a
 setwd("C:/R_stuff/adv_topics/homework_2/")
 
 data <- read.csv("hw1_data1.csv", stringsAsFactors = FALSE)
+
 
 # Code date as an object of class POSIX
 data$Date <- as.Date(data$Date)
@@ -33,9 +37,15 @@ data <- data[order(data$Date), ]
 # Diff and log close price
 data$returns <- 0
 
+
 for(i in 2:length(data$Date)){
   data$returns[i] <- log(data$Close[i] / data$Close[i - 1])
 }
+
+summary(data$returns)
+
+
+## @knitr Q2a
 
 # Fit normal distribution to returns
 fit <- fitdistr(data$returns, "normal")
@@ -43,9 +53,15 @@ fit <- fitdistr(data$returns, "normal")
 mean <- fit$estimate[1]
 sd <- fit$estimate[2]
 
-# Find 0.01 quantile of distribution
+# Find quantile of distribution
 quantile_1_pct <- qnorm(0.01, mean, sd)
 
+
+mean
+sd
+quantile_1_pct
+
+## @knitr Q2b
 # Simulate data from model and return mean and sd
 sim_output <- function(){
   sim <- list(mean = mean(rnorm(length(data$returns), mean, sd)), 
@@ -59,6 +75,7 @@ find_0.01_quantile <- function(input_list){
 
 find_0.01_quantile(list(mean = 5, sd = 2)) # outputs 0.347
 
+## @knitr Q2d
 B <- 10000
 bootstrapped_0.01_quantile <- rep(0, B)
 for(i in 1:B){
@@ -68,9 +85,12 @@ for(i in 1:B){
 # 95 percent confidence interval
 conf_interval <- quantile(bootstrapped_0.01_quantile, c(0.025, (1 - 0.025)))
 
-# Compare to 0.01 quantile of data
-quantile(data$returns, 0.01) # No, this does not fall within the confidence interval! Maybe we should have used a t-distribution?
+conf_interval
 
+# Compare to 0.01 quantile of data
+quantile(data$returns, 0.01)
+
+## @knitr Q3
 library(ggplot2)
 ggplot(data, aes(x = returns)) +
   geom_histogram(aes(y = ..density..), alpha = 0.2) +
@@ -81,7 +101,7 @@ ggplot(data, aes(x = returns)) +
                 colour = "red") +
   ggtitle("Histogram of returns plotted against theoretical normal distribution(red)\n Mean: -6.4e-5, SD: 0.0139 and\n non-parametric density estimate (blue)")
 
-
+## @knitr Q4
 boostrap_q_0.01 <- function(B){
   q_est <- rep(0, B)
 
@@ -102,15 +122,18 @@ boot.estimates <- list(lower = quantile(estimates$q_est, 0.025),
                        point = mean(estimates$q_est),
                        upper = quantile(estimates$q_est, 0.975)) # lower: -0.06, mean: -0.035, upper: -0.021
 
-conf_interval # Bootstrapped confidence interval is much much wider than that bootstrapped from the parametric distribution
+## @knitr Q4b
+conf_interval 
 
+boot.estimates
+
+## @knitr Q5
 # Fit AR(1) model to log returns
 ar_fit <- arima(data$returns, order = c(1, 0, 0), include.mean = FALSE)
 
 ar_fit # B_est = -0.0822, s.e. = 0.0198, s.e. of error = 0.0139
 
-sqrt(ar_fit$var.coef)
-
+## @knitr Q6
 # Find bootstrapped standard error estimate of Beta by bootstrapping residuals
 residuals <- ar_fit$residuals
 
@@ -125,15 +148,18 @@ for(i in 1:B){
 }
 
 # Standard error by bootstrapping
-sd(boot.beta) # standard error by bootstrap isd 0.016 vs. 0.0198 by single model fit.
+sd(boot.beta) # standard error by bootstrap is 0.016 vs. 0.0198 by single model fit.
 
 
-# Problem 7
+
+# Problem 7a
+## @knitr Q7a
 data <- read.table("Brambles.txt", stringsAsFactors = FALSE, header = TRUE)
 
 ggplot(data, aes(x = X, y = Y)) + 
   geom_point()
 
+## @knitr Q7b
 groups <- matrix(rep(0, 25), nrow = 5)
 for(i in 0:4){
   for(j in 0:4){
@@ -155,6 +181,8 @@ mead <- function(x){
 
 q.obs <- mead(groups)
 
+q.obs
+
 iter <- 5000
 q.rt <- rep(0, iter)
 for(i in 1:iter){
@@ -165,7 +193,7 @@ for(i in 1:iter){
 
 1 - length(which(q.rt >= q.obs)) / iter
 
-
+## @knitr Q7c
 # Nearest neighbor approach
 dis <- matrix(0, 98, 98)
 x <- data$X
@@ -193,13 +221,9 @@ k_vals <- sapply(1:10, FUN = k_est)
 
 k_vals <- as.data.frame(list(k = seq(1, 10, 1), q_value = k_vals))
 
-ggplot(k_vals, aes(x = k, y = q_value)) +
-  geom_point()
-
 # Simulate random univariate points on 5 x 5 grid
-B <- 1000
-
 library(reshape2)
+B <- 100
 for(t in 1:B){
   set.seed(t)
   sim_x <- runif(98, min = 0, max = 5)
@@ -229,7 +253,7 @@ for(t in 1:B){
   }
 }
 
-# Not extract 95% confidence intervals for each column
+# Extract 95% confidence intervals for each column
 k_vals$lower <- rep(0, 10)
 k_vals$upper <- rep(0, 10)
 
@@ -238,15 +262,6 @@ for(k in 1:10){
   k_vals$upper[k] <- quantile(sim_k_vals[ , k + 1], 0.975)
 }
 
-
-
-ggplot(k_vals, aes(x = k, y = q_value)) +
-  geom_point() +
-  geom_path(aes(x = k, y = lower), colour = "red") +
-  geom_path(aes(x = k, y = upper), colour = "red")
-
-
-dcast(sim_k_vals, . ~ k)
 
 
 

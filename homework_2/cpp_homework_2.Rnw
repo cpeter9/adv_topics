@@ -3,6 +3,7 @@
 \documentclass{article}
 \usepackage{mathpazo}
 \renewcommand{\sfdefault}{lmss}
+\usepackage{tikz}
 \renewcommand{\ttdefault}{lmtt}
 % \usepackage{alltt}
 \usepackage{geometry}
@@ -23,130 +24,80 @@ opts_chunk$set(fig.path='figure/hw8-', cache.path='cache/hw8-', dev='tikz', fig.
 \author{Christopher Peters}
 \maketitle
 \begin{enumerate}
-\item Problem 1a
+\item $\bf{Problem\; 1a}$
 
 <<Q1a, echo=TRUE>>=
 @
 
-\item Problem 2a
+\item $\bf{Problem\; 2a}$
 
 <<Q2a, echo=TRUE>>=
 @
 
-\item Problem 2b \& 2c
+\item $\bf{Problem 2b\; \&\; 2c}$
 
 <<Q2b, echo=TRUE>>=
 @
 
-\item Problem 2d
+\item $\bf{Problem 2d\; \&\; 2e}$
 
 <<Q2d, echo=TRUE>>=
 @
 
 No, this does not fall within the confidence interval. Maybe we should have used a t-distribution?
 
+\newpage
+\item $\bf{Problem\; 3}$
 
-% 
-% \item Polar representation of a number
-% 
-% \begin{enumerate}
-% \item the \emph{polaroid()} function: the easy part is the math, and the
-% difficult part lies in the gory details for special cases -- it is
-% easy to work out $R=\sqrt{\sum_{i}x_{i}^{2}}$ since $\sin^{2}\theta+\cos^{2}\theta=1$;
-% then $\theta_{1}=\arccos(x_{1}/R)$, $\theta_{2}=\arccos(x_{2}/(R\sin\theta_{1}))$,
-% ... Then devils come: if $R=0$, there are infinite choices of $\theta_{i}$'s
-% ($x_{i}/0$ does not make sense), and we can give an arbitrary vector,
-% e.g. $\theta_{i}=0$; if any $\sin(\theta_{i})=0$, we should not
-% move on to the rest of $\theta_{i}$'s since the denominator is 0;
-% finally, $\sin\theta_{i}\geq0$ for all $i$ because we get $\theta$
-% from $\arccos()$; now we have to consider the last element of $x$,
-% say $x_{n}$; if $x_{n}$ is negative, it means we have to do something
-% on $\theta_{1}$, otherwise $x_{n}$ will be nonnegative; $\sin\theta_{1}=-\sin(2\pi-\theta_{1})$
-% is the way to go, but remember other $\theta_{i}$'s need to be adjusted
-% as well (using the fact $\cos\theta_{i}=-\cos(\pi-\theta_{i})$ and
-% $\sin\theta_{i}=\sin(\pi-\theta_{i})$) -- you add a negative sign
-% to $\sin\theta_{1}$ and you have to cancel it out on $x_{2},\ldots,x_{p-1}$
-% by adjusting $\theta_{2},\ldots,\theta_{p-1}$.
-% 
-% 
-% <<Q3a>>=
-% @
-% 
-% \item the \emph{normalize()} function
-% 
-% 
-% <<Q3b>>=
-% @
-% 
-% \item test Uniform distributions: the P-values are very small, so we can
-% reject $H_{0}$ that the columns follow $U(-1,1)$.
-% 
-% 
-% <<Q3c>>=
-% @
-% 
-% \item test $\chi_{5}^{2}$ (cannot reject) and Uniform distributions (only
-% $\theta_{4}$ seems to be from $U(0,\pi)$)
-% 
-% 
-% <<Q3d, fig.width=4, fig.height=2.8, out.width='.4\\linewidth'>>=
-% @
-% 
-% \end{enumerate}
-% \item Fixed-point method ($d$-dimensional): the key point is to use an
-% appropriate measure for the stopping criterion (tolerance); I used
-% the Euclidian distance.
-% 
-% 
-% <<Q4>>=
-% @
-% 
-% \item Second-order Newton's method: we want to solve%
-% \footnote{I think the description of the problem is fairly misleading -- I do
-% not know if the author asks for the root of $f(x)=0$ or $f(x)=x$,
-% because he mentioned the ``fixed point'' which should be the latter
-% case. Anyway, I will pretend we are going to solve the former case.%
-% } $0=f(x)\approx f(x_{n})+(x-x_{n})f'(x_{n})+(x-x_{n})^{2}f''(x_{n})/2$;
-% we can write it as $a_{0}+a_{1}(x-x_{n})+a_{2}(x-x_{n})^{2}\approx0$
-% where $a_{0}=f(x_{n})$, $a_{1}=f'(x_{n})$ and $a_{2}=f''(x_{n})/2$,
-% so the roots (if they exist) are $\left(-a_{1}\pm\sqrt{a_{1}^{2}-4a_{0}a_{2}}\right)/2a_{2}+x_{n}$;
-% now we know how to proceed from $x_{n}$ to $x_{n+1}$ (choose the
-% nearest root, or use $-a_{1}/2a_{2}$ if $a_{1}^{2}-4a_{0}a_{2}<0$).
-% Note when $a_{2}=0$, the root should be $-a_{0}/a_{1}+x_{n}$. This
-% quadratic version of Newton's method seems to be easily trapped in
-% local maxima/minima (e.g. in (a) and (c)).
-% 
-% 
-% <<Q5>>=
-% @
-% 
-% \item MLE
-% 
-% \begin{enumerate}
-% \item plot of log-likelihood: a beautiful piece of ``cloud''
-% 
-% 
-% <<Q6a, fig.width=7, fig.height=3, out.width='.8\\linewidth'>>=
-% @
-% 
-% \item use \emph{optimize()}
-% 
-% 
-% <<Q6b>>=
-% @
-% 
-% \item use \emph{newton()}
-% 
-% 
-% <<Q6c>>=
-% @
-% 
-% \item there are several local maxima for $l(\theta)$
-% 
-% 
-% <<Q6d>>=
-% @
-% \end{enumerate}
+<<Q3, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE>>=
+@
+
+The theoretical normal distribution in color red has slimmer tails than the empirical density shown in blue. This makes sense given that our bootstrapped 95\% confidence interval for Q(0.01) does not contain the actual first percentile of the original returns data.
+
+\item $\bf{Problem\; 4}$
+
+<<Q4>>=
+@
+
+\newpage
+
+<<Q4b>>=
+@
+
+The non-parametric bootstrapped confidence interval is much much wider than that bootstrapped from the parametric distribution.  This makes sense because given the histogram and empirical density in comparison with the theoretical density shown above.
+
+The non-parametric 95\% CI is from -0.6 to -0.02, while the parametric estimate is -0.033 to -0.031, much narrower.
+
+\item $\bf{Problem\; 5}$
+
+<<Q5, echo=TRUE>>=
+@
+
+
+The slope of $\widehat{\beta}$ is -0.082, the standard error of $\widehat{\epsilon}$ is 0.0139, the standard error of $\widehat{\beta}$ is 0.02.
+
+\item $\bf{Problem\; 6}$
+
+<<Q6, echo=TRUE>>=
+@
+
+The estimate of standard error for $\widehat{\beta}$ via bootstrapping is 0.016 vs. 0.02 by the original AR model.
+
+<<Q7a, echo=TRUE>>=
+@
+
+<<Q7b, echo=TRUE>>=
+@
+
+Using Mead's method, we find that $Q_m$ is 0.07.  This is exceeded by 20\% of $Q_m$ values from randomized data.  This is a relatively low figure, but not enough to reject the null hypothesis that the data is randomnly distributed.  It seems Mead's statistic has relatively low power -- clusters of data are visually apparent in the preceeding plot.
+
+<<Q7c, echo=TRUE>>=
+@
+
+Please see separate graphic showing plot of neareest neighbor.  Sweave had a critical error on the output device related to this plot that was difficult to solve.  The separate graphic shows that average distances betweeen values at k = 3, 4, and 5 and also 9 and 10 are higher than bootstrapped 95\% confidence intervals.  This matches what appears in the plot of the original data.  Individual brambles tend to behave randomly, but they develop clusters that seem to push away other clusters.
+
+
+
 \end{enumerate}
 
 
