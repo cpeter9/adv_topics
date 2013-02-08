@@ -128,9 +128,42 @@ for(i in 1:B){
 sd(boot.beta) # standard error by bootstrap isd 0.016 vs. 0.0198 by single model fit.
 
 
+# Problem 7
+data <- read.table("Brambles.txt", stringsAsFactors = FALSE, header = TRUE)
 
+ggplot(data, aes(x = X, y = Y)) + 
+  geom_point()
 
+groups <- matrix(rep(0, 25), nrow = 5)
+for(i in 0:4){
+  for(j in 0:4){
+    groups[i + 1, j + 1] <- ifelse(!is.na(table(data$X > j & data$X <= (j + 1) & data$Y > i & data$Y <= (i + 1))[2]),
+                                    table(data$X > j & data$X <= (j + 1) & data$Y > i & data$Y <= (i + 1))[2], 0)
+  }
+}
 
+groups <- as.vector(groups)
+
+mead <- function(x){
+  t.bar <- mean(x)
+  tmp1 <- 25 * (t.bar^2)
+  tss <- sum(x^2) - tmp1
+  bss <- (1/5)*(sum(x[1:5])^2 + sum(x[6:10])^2 + sum(x[11:15])^2 + sum(x[16:20])^2 + sum(x[21:25])^2) - tmp1
+  q <- bss / tss
+  return(q)
+}
+
+q.obs <- mead(groups)
+
+iter <- 5000
+q.rt <- rep(0, iter)
+for(i in 1:iter){
+  set.seed(i)
+  cnt.rand <- sample(groups, size = 25, replace = FALSE)
+  q.rt[i] <- mead(cnt.rand)
+}
+
+1 - length(which(q.rt >= q.obs)) / iter
 
 
 
