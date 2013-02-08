@@ -234,14 +234,17 @@ k_vals$lower <- rep(0, 10)
 k_vals$upper <- rep(0, 10)
 
 for(k in 1:10){
-  k_vals$lower <-  quantile(sim_k_vals[ , k + 1], 0.025), 
-  k_vals$upper <- uantile(sim_k_vals[ , k + 1], 0.975)
+  k_vals$lower[k] <-  quantile(sim_k_vals[ , k + 1], 0.025)
+  k_vals$upper[k] <- quantile(sim_k_vals[ , k + 1], 0.975)
 }
 
 
 
-ggplot(sim_k_vals, aes(x = k, y = q_value)) +
-  geom_point()
+ggplot(k_vals, aes(x = k, y = q_value)) +
+  geom_point() +
+  geom_path(aes(x = k, y = lower), colour = "red") +
+  geom_path(aes(x = k, y = upper), colour = "red")
+
 
 dcast(sim_k_vals, . ~ k)
 
