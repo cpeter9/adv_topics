@@ -1,0 +1,153 @@
+%% LyX 2.0.5 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{article}
+\usepackage{mathpazo}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+% \usepackage{alltt}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=2.5cm,rmargin=2.5cm}
+\begin{document}
+
+<<set-options, echo=FALSE, cache=FALSE>>=
+options(replace.assign=TRUE,width=50)
+knit_hooks$set(par=function(before, options, envir){if (before) par(mar=c(4,4,.1,.1),cex.lab=.95,cex.axis=.9,mgp=c(2,.7,0),tcl=-.3)})
+read_chunk('cpp_homework_2.R')
+opts_chunk$set(fig.path='figure/hw8-', cache.path='cache/hw8-', dev='tikz', fig.width=7, fig.height=4, fig.align='center', cache=TRUE, fig.show='hold', par=TRUE)
+@
+
+
+\title{ESXT 7152 Homework 2}
+
+
+\author{Christopher Peters}
+\maketitle
+\begin{enumerate}
+\item Problem 1a
+
+<<Q1a, echo=TRUE>>=
+@
+
+\item Problem 2a
+
+<<Q2a, echo=TRUE>>=
+@
+
+\item Problem 2b \& 2c
+
+<<Q2b, echo=TRUE>>=
+@
+
+\item Problem 2d
+
+<<Q2d, echo=TRUE>>=
+@
+
+No, this does not fall within the confidence interval. Maybe we should have used a t-distribution?
+
+
+% 
+% \item Polar representation of a number
+% 
+% \begin{enumerate}
+% \item the \emph{polaroid()} function: the easy part is the math, and the
+% difficult part lies in the gory details for special cases -- it is
+% easy to work out $R=\sqrt{\sum_{i}x_{i}^{2}}$ since $\sin^{2}\theta+\cos^{2}\theta=1$;
+% then $\theta_{1}=\arccos(x_{1}/R)$, $\theta_{2}=\arccos(x_{2}/(R\sin\theta_{1}))$,
+% ... Then devils come: if $R=0$, there are infinite choices of $\theta_{i}$'s
+% ($x_{i}/0$ does not make sense), and we can give an arbitrary vector,
+% e.g. $\theta_{i}=0$; if any $\sin(\theta_{i})=0$, we should not
+% move on to the rest of $\theta_{i}$'s since the denominator is 0;
+% finally, $\sin\theta_{i}\geq0$ for all $i$ because we get $\theta$
+% from $\arccos()$; now we have to consider the last element of $x$,
+% say $x_{n}$; if $x_{n}$ is negative, it means we have to do something
+% on $\theta_{1}$, otherwise $x_{n}$ will be nonnegative; $\sin\theta_{1}=-\sin(2\pi-\theta_{1})$
+% is the way to go, but remember other $\theta_{i}$'s need to be adjusted
+% as well (using the fact $\cos\theta_{i}=-\cos(\pi-\theta_{i})$ and
+% $\sin\theta_{i}=\sin(\pi-\theta_{i})$) -- you add a negative sign
+% to $\sin\theta_{1}$ and you have to cancel it out on $x_{2},\ldots,x_{p-1}$
+% by adjusting $\theta_{2},\ldots,\theta_{p-1}$.
+% 
+% 
+% <<Q3a>>=
+% @
+% 
+% \item the \emph{normalize()} function
+% 
+% 
+% <<Q3b>>=
+% @
+% 
+% \item test Uniform distributions: the P-values are very small, so we can
+% reject $H_{0}$ that the columns follow $U(-1,1)$.
+% 
+% 
+% <<Q3c>>=
+% @
+% 
+% \item test $\chi_{5}^{2}$ (cannot reject) and Uniform distributions (only
+% $\theta_{4}$ seems to be from $U(0,\pi)$)
+% 
+% 
+% <<Q3d, fig.width=4, fig.height=2.8, out.width='.4\\linewidth'>>=
+% @
+% 
+% \end{enumerate}
+% \item Fixed-point method ($d$-dimensional): the key point is to use an
+% appropriate measure for the stopping criterion (tolerance); I used
+% the Euclidian distance.
+% 
+% 
+% <<Q4>>=
+% @
+% 
+% \item Second-order Newton's method: we want to solve%
+% \footnote{I think the description of the problem is fairly misleading -- I do
+% not know if the author asks for the root of $f(x)=0$ or $f(x)=x$,
+% because he mentioned the ``fixed point'' which should be the latter
+% case. Anyway, I will pretend we are going to solve the former case.%
+% } $0=f(x)\approx f(x_{n})+(x-x_{n})f'(x_{n})+(x-x_{n})^{2}f''(x_{n})/2$;
+% we can write it as $a_{0}+a_{1}(x-x_{n})+a_{2}(x-x_{n})^{2}\approx0$
+% where $a_{0}=f(x_{n})$, $a_{1}=f'(x_{n})$ and $a_{2}=f''(x_{n})/2$,
+% so the roots (if they exist) are $\left(-a_{1}\pm\sqrt{a_{1}^{2}-4a_{0}a_{2}}\right)/2a_{2}+x_{n}$;
+% now we know how to proceed from $x_{n}$ to $x_{n+1}$ (choose the
+% nearest root, or use $-a_{1}/2a_{2}$ if $a_{1}^{2}-4a_{0}a_{2}<0$).
+% Note when $a_{2}=0$, the root should be $-a_{0}/a_{1}+x_{n}$. This
+% quadratic version of Newton's method seems to be easily trapped in
+% local maxima/minima (e.g. in (a) and (c)).
+% 
+% 
+% <<Q5>>=
+% @
+% 
+% \item MLE
+% 
+% \begin{enumerate}
+% \item plot of log-likelihood: a beautiful piece of ``cloud''
+% 
+% 
+% <<Q6a, fig.width=7, fig.height=3, out.width='.8\\linewidth'>>=
+% @
+% 
+% \item use \emph{optimize()}
+% 
+% 
+% <<Q6b>>=
+% @
+% 
+% \item use \emph{newton()}
+% 
+% 
+% <<Q6c>>=
+% @
+% 
+% \item there are several local maxima for $l(\theta)$
+% 
+% 
+% <<Q6d>>=
+% @
+% \end{enumerate}
+\end{enumerate}
+
+
+\end{document}
