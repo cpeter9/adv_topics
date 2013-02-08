@@ -167,8 +167,83 @@ for(i in 1:iter){
 
 
 # Nearest neighbor approach
+dis <- matrix(0, 98, 98)
+x <- data$X
+y <- data$Y
+
+for(i in 2:98){
+  for(j in 1:(i - 1)){
+    dis[i, j] <- sqrt(((x[i] - x[j])^2 + (y[i] - y[j])^2))
+    dis[i, j] <- dis[i, j]
+  }
+}
+
+FUN1 <- function(dis, k){
+  FUN <- function(x){
+    sort(x)[(k + 1)]
+  }
+  apply(dis, 1, FUN)
+}
+
+k_est <- function(x){ 
+  mean(FUN1(dis, x))
+}
+
+k_vals <- sapply(1:10, FUN = k_est)
+
+k_vals <- as.data.frame(list(k = seq(1, 10, 1), q_value = k_vals))
+
+ggplot(k_vals, aes(x = k, y = q_value)) +
+  geom_point()
+
+# Simulate random univariate points on 5 x 5 grid
+B <- 1000
+
+library(reshape2)
+for(t in 1:B){
+  set.seed(t)
+  sim_x <- runif(98, min = 0, max = 5)
+  sim_y <- runif(98, min = 0, max = 5)
+  
+  for(i in 2:98){
+    for(j in 1:(i - 1)){
+      dis[i, j] <- sqrt(((sim_x[i] - sim_x[j])^2 + (sim_y[i] - sim_y[j])^2))
+      dis[i, j] <- dis[i, j]
+    }
+  }
+  
+  k_est <- function(x){ 
+    mean(FUN1(dis, x))
+  }
+  
+  temp <- sapply(1:10, FUN = k_est)
+                            
+  if(t == 1) {
+    sim_k_vals <- as.data.frame(list(k = seq(1, 10, 1), q_value = temp)); 
+    sim_k_vals$B <- t
+    sim_k_vals <- dcast(sim_k_vals, B ~ k, value.var = "q_value")} else {
+    temp2 <- as.data.frame(list(k = seq(1, 10, 1), q_value = temp))
+    temp2$B <- t
+    temp2 <- dcast(temp2, B ~ k, value.var = "q_value")
+    sim_k_vals <- rbind(sim_k_vals, temp2)
+  }
+}
+
+# Not extract 95% confidence intervals for each column
+k_vals$lower <- rep(0, 10)
+k_vals$upper <- rep(0, 10)
+
+for(k in 1:10){
+  k_vals$lower <-  quantile(sim_k_vals[ , k + 1], 0.025), 
+  k_vals$upper <- uantile(sim_k_vals[ , k + 1], 0.975)
+}
 
 
+
+ggplot(sim_k_vals, aes(x = k, y = q_value)) +
+  geom_point()
+
+dcast(sim_k_vals, . ~ k)
 
 
 
