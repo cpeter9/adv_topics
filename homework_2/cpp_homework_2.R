@@ -5,8 +5,20 @@
 # install.packages("MASS")
 library(MASS)
 
+# install.packages("munsell")
+library(munsell)
+
+# install.packages("dichromat")
+library(dichromat)
+
+# install.packages("labeling")
+library(labeling)
+
 # install.packages("ggplot2")
 library(ggplot2)
+
+# install.packages("plyr")
+library(plyr)
 
 setwd("C:/R_stuff/adv_topics/homework_2/")
 
@@ -61,16 +73,44 @@ quantile(data$returns, 0.01) # No, this does not fall within the confidence inte
 
 library(ggplot2)
 ggplot(data, aes(x = returns)) +
-  geom_histogram(aes(y = ..density..)) +
-  stat_function(fun = dt,
-                args = c(df = sample.size,
-                         ncp = mean(badge.means$badge.means)),
-                colour = "red") +
+  geom_histogram(aes(y = ..density..), alpha = 0.2) +
+  geom_density(aes(y = ..density..), colour = "blue") +
   stat_function(fun = dnorm,
-                args = c(mean = mean(badge.means$badge.means),
-                         sd = sd(badge.means$badge.means)),
-                colour = "blue") +
-  ggtitle("Histogram of mean badges earned within two weeks of membership\nplotted against theoretical t-distribution (red) and normal distribution (blue)")
+                args = c(mean,
+                         sd),
+                colour = "red") +
+  ggtitle("Histogram of returns plotted against theoretical normal distribution(red)\n Mean: -6.4e-5, SD: 0.0139 and\n non-parametric density estimate (blue)")
+
+
+boostrap_q_0.01 <- function(B){
+  q_est <- rep(0, B)
+  se_est <- rep(0, B)
+  
+  for(i in 1:B){
+    set.seed(i)
+    input_sample <- sample(data$returns, 100, replace = TRUE)
+    q_est[i] <- quantile(input_sample, 0.01)
+    
+    se_sub_est <- rep(0, 100)
+    for(j in 1:100){
+      set.seed(j)
+      se_sub_est[j] <- quantile(sample(input_sample, 30, replace = TRUE), 0.01)
+    }
+    
+    se_est[i] <- sd(se_sub_est)
+  }
+
+  output <- as.data.frame(list(q_est = q_est, se_est = se_est))
+  return(output)
+}
+
+B <- 1000
+estimates <- boostrap_q_0.01(B)
+
+mean(estimates$q_est) - mean(lower) * mean(estimates$se_est)
+mean(estimates$q_est) - mean(upper) * mean(estimates$se_est)
+mean(estimates$q_est)
+
 
 
 
