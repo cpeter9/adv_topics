@@ -104,6 +104,31 @@ boot.estimates <- list(lower = quantile(estimates$q_est, 0.025),
 
 conf_interval # Bootstrapped confidence interval is much much wider than that bootstrapped from the parametric distribution
 
+# Fit AR(1) model to log returns
+ar_fit <- arima(data$returns, order = c(1, 0, 0), include.mean = FALSE)
+
+ar_fit # B_est = -0.0822, s.e. = 0.0198, s.e. of error = 0.0139
+
+sqrt(ar_fit$var.coef)
+
+# Find bootstrapped standard error estimate of Beta by bootstrapping residuals
+residuals <- ar_fit$residuals
+
+B <- 1000
+boot.beta <- rep(0, B)
+for(i in 1:B){
+  set.seed(i)
+  tmp <- sample(1:length(ar_fit$residuals), size = length(ar_fit$residuals), replace = T)
+  tmp2 <- data.frame(error = data$returns + residuals[tmp])
+  boot.beta[i] <- arima(tmp2$error, order = c(1, 0, 0), include.mean = FALSE)$coef
+  
+}
+
+# Standard error by bootstrapping
+sd(boot.beta) # standard error by bootstrap isd 0.016 vs. 0.0198 by single model fit.
+
+
+
 
 
 
