@@ -61,8 +61,8 @@ output <- cbind(output, dcast(output_temp, run ~ coef_names, value.var = output[
 fitControl <- trainControl(## 5-fold CV
    method = "repeatedcv",
    number = 5,
-  ## repeated twenty times
-   repeats = 20,
+  ## repeated once
+   repeats = 1,
   ## Save all the resampling results
    returnResamp = "all")
 
@@ -75,14 +75,40 @@ ridgefit <- train(training[ , -length(training)], training[, length(training)],
                  trControl = fitControl,
                   tuneGrid = lambdaGrid)
 
-ridgefit$finalModel$lambda2
+output_temp <- as.data.frame(unlist(coefficients(ridgefit$finalModel, "penalized")))
+output_temp$coef_names <- row.names(output_temp)
+names(output_temp)[1] <- "co_vars"
 
-plot(ridgefit$results$lambda2, ridgefit$results$RMSE, type="l")
+
+mspe <- (1/training_size)*sum((predict(ridgefit$finalModel, medv ~ ., data = testing) - testing$medv)^2)
+
+output_temp <- as.data.frame(list(model = "ridge", mspe = mspe,
+                                  dcast(output_temp, 
+                                        run ~ coef_names, value.var = "co_vars")))
+
+output_temp$intercept <- 0
+names(output_temp)[grep("intercept", names(output_temp))] <- "(Intercept)"
+
+output <- rbind(output, output_temp)
+
+fractionGrid <- expand.grid(.fraction = seq(0, 1, 0.01))
 
 lassofit <- train(training[ , -length(training)], training[, length(training)],
                   method = "lars",
                   trControl = fitControl,
-                  type = "lasso")
+                  type = "lasso",
+                  tuneGrid = fractionGrid)
 
-lassofit$finalModel$tuneValue
+output_temp <- as.data.frame(unlist(lassofit$finalModel$beta[which.min(lassofit$finalModel$RSS), ]))
+output_temp$coef_names <- row.names(output_temp)
+names(output_temp)[1] <- "co_vars"
+
+output_temp <- as.data.frame(list(model = "lasso", mspe = lassofit$finalModel$RSS[which.min(lassofit$finalModel$RSS)] / 400,
+                   dcast(output_temp, 
+                         run ~ coef_names, value.var = "co_vars")))
+
+output_temp$intercept <- 0
+names(output_temp)[grep("intercept", names(output_temp))] <- "(Intercept)"
+                  
+output <- rbind(output, output_temp)
 
