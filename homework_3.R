@@ -35,16 +35,20 @@ for(i in c(1, 3, 5:(length(df) - 1))){
 }
   
 # Randomly split data into training and testing sizes 400 and 106, respectively
-training_size <- 400
 
-training_index <- sample(1:length(df$medv), training_size)
-testing_index <- which(!(1:length(df$medv) %in% training_index))
-
-training <- df[training_index, ]
-testing <- df[testing_index, ]
 
 for(i in 1:20){
-run <- i
+  run <- i
+  set.seed(i)
+  
+  training_size <- 400
+  
+  training_index <- sample(1:length(df$medv), training_size)
+  testing_index <- which(!(1:length(df$medv) %in% training_index))
+  
+  training <- df[training_index, ]
+  testing <- df[testing_index, ]
+  
 linear_model <- lm(medv ~ ., data = training)
 
 mspe <- (1/training_size)*sum((predict(linear_model, testing) - testing$medv)^2)
