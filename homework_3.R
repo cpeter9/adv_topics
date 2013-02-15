@@ -43,8 +43,8 @@ testing_index <- which(!(1:length(df$medv) %in% training_index))
 training <- df[training_index, ]
 testing <- df[testing_index, ]
 
-
-run <- 1
+for(i in 1:20){
+run <- i
 linear_model <- lm(medv ~ ., data = training)
 
 mspe <- (1/training_size)*sum((predict(linear_model, testing) - testing$medv)^2)
@@ -110,5 +110,7 @@ output_temp <- as.data.frame(list(model = "lasso", mspe = lassofit$finalModel$RS
 output_temp$intercept <- 0
 names(output_temp)[grep("intercept", names(output_temp))] <- "(Intercept)"
                   
-output <- rbind(output, output_temp)
+output_run <- rbind(output, output_temp)
 
+if(run == 1){final_output <- output_run} else {final_output <- rbind(final_output, output_run)}
+}
