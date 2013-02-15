@@ -51,7 +51,7 @@ for(i in 1:20){
   
 linear_model <- lm(medv ~ ., data = training)
 
-mspe <- (1/training_size)*sum((predict(linear_model, testing) - testing$medv)^2)
+mspe <- (1/length(testing$medv))*sum((predict(linear_model, testing) - testing$medv)^2)
 
 output <- as.data.frame(list(model = "linear_model", mspe = mspe))
 
@@ -83,8 +83,7 @@ output_temp <- as.data.frame(unlist(coefficients(ridgefit$finalModel, "penalized
 output_temp$coef_names <- row.names(output_temp)
 names(output_temp)[1] <- "co_vars"
 
-
-mspe <- (1/training_size)*sum((predict(ridgefit$finalModel, medv ~ ., data = testing) - testing$medv)^2)
+mspe <- (1/length(testing$medv))*sum((predict(ridgefit$finalModel, medv ~ ., data = testing)[, 1] - testing$medv)^2)
 
 output_temp <- as.data.frame(list(model = "ridge", mspe = mspe,
                                   dcast(output_temp, 
@@ -101,13 +100,19 @@ lassofit <- train(training[ , -length(training)], training[, length(training)],
                   method = "lars",
                   trControl = fitControl,
                   type = "lasso",
-                  tuneGrid = fractionGrid)
+                  tuneGrid = fractionGrid,
+                  intercept = TRUE)
 
 output_temp <- as.data.frame(unlist(lassofit$finalModel$beta[which.min(lassofit$finalModel$RSS), ]))
 output_temp$coef_names <- row.names(output_temp)
 names(output_temp)[1] <- "co_vars"
 
-output_temp <- as.data.frame(list(model = "lasso", mspe = lassofit$finalModel$RSS[which.min(lassofit$finalModel$RSS)] / 400,
+# Select optimal model on the basis of min RSS
+lasso_mspe <- (1/length(testing$medv))*sum((predict(lassofit$finalModel, 
+                                              newx = testing[ , -length(testing)], 
+                                              type = "fit")$fit[ , which.min(summary(lassofit$finalModel)$Rss)] - testing$medv)^2)
+    
+output_temp <- as.data.frame(list(model = "lasso", mspe = lasso_mspe,
                    dcast(output_temp, 
                          run ~ coef_names, value.var = "co_vars")))
 
@@ -118,3 +123,15 @@ output_run <- rbind(output, output_temp)
 
 if(run == 1){final_output <- output_run} else {final_output <- rbind(final_output, output_run)}
 }
+
+# Sort output by MPSE
+final_output <- final_output[order(final_output$mspe, decreasing = TRUE), ]
+
+# install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(final_output, aes(y = mspe, x = run, fill = model)) + 
+  geom_bar(stat = "identity", position = position_dodge())
+
+
+
