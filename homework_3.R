@@ -74,4 +74,15 @@ ridgefit <- train(training[ , -length(training)], training[, length(training)],
                  method = "penalized",
                  trControl = fitControl,
                   tuneGrid = lambdaGrid)
-                 
+
+ridgefit$finalModel$lambda2
+
+plot(ridgefit$results$lambda2, ridgefit$results$RMSE, type="l")
+
+lassofit <- train(training[ , -length(training)], training[, length(training)],
+                  method = "lars",
+                  trControl = fitControl,
+                  type = "lasso")
+
+lassofit$finalModel$tuneValue
+
